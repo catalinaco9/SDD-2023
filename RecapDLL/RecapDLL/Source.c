@@ -40,6 +40,7 @@ ListNode* createNode(StudentInfo*);
 ListNode* insertInFront(ListNode*, ListNode*);
 ListNode* insertAtTail(ListNode*, ListNode*);
 void insertAfterKey(ListNode*, ListNode*, char*);
+ListNode* insertOnPosition(ListNode* , ListNode* , int );
 
 #define LINE_SIZE 128
 
@@ -66,13 +67,16 @@ void main()
 			StudentInfo* stud = createStudentInfo(name, income, ref);
 			ListNode* node = createNode(stud);
 			//doubleLinkedList = insertInFront(doubleLinkedList, node);
-			doubleLinkedList = insertAtTail(doubleLinkedList, node);
+			//doubleLinkedList = insertAtTail(doubleLinkedList, node);
+			doubleLinkedList = insertOnPosition(doubleLinkedList, node, index);
 			agenda[index++] = stud;
 		}
 		//displayStudents(agenda, sizeof(agenda) / sizeof(StudentInfo*));
 		StudentInfo* stud = createStudentInfo("Popescu Emil", 1700.43, 56);
 		ListNode* node = createNode(stud);
-		insertAfterKey(doubleLinkedList, node, "Popescu Maria");
+		//insertAfterKey(doubleLinkedList, node, "Popescu Maria");
+
+		insertOnPosition(doubleLinkedList, node, 3);
 		printList(doubleLinkedList);
 		fclose(pFile);
 	}
@@ -95,6 +99,47 @@ ListNode* insertInFront(ListNode* list, ListNode* node) {
 	}
 	return node;
 }
+
+ListNode* insertOnPosition(ListNode* list, ListNode* node, int position)
+{
+	if (position <= 0)
+	{
+		if (list != NULL)
+		{
+			node->next = list;
+			list->prev = node;
+		}
+		list = node;
+	}
+	else
+	{
+		ListNode* aux = list;
+		int index = 0;
+		while (aux->next != NULL && index < position - 1)
+		{
+			aux = aux->next;
+			index++;
+		}
+		if (aux->next == NULL)
+		{
+			//the tail
+			node->prev = aux;
+			aux->next = node;
+		}
+		else
+		{
+			//index==position-1
+			//sets the new node to the node at the current position
+			node->next = aux->next;
+			node->prev = aux;
+			//the prev of the node followong the new node to the new node
+			aux->next->prev = node;
+			aux->next = node;
+		}
+	}
+	return list;
+}
+
 
 void insertAfterKey(ListNode* list, ListNode* node, char* keyName) {
 	while (list && strcmp(list->info->name, keyName) != 0) {
